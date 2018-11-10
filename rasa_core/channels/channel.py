@@ -44,7 +44,7 @@ class UserMessage(object):
             self.output_channel = CollectingOutputChannel()
 
         if sender_id is not None:
-            self.sender_id = sender_id
+            self.sender_id = str(sender_id)
         else:
             self.sender_id = self.DEFAULT_SENDER_ID
 
@@ -68,7 +68,9 @@ def register(input_channels,  # type: List[InputChannel]
 def button_to_string(button, idx=0):
     """Create a string representation of a button."""
     return "{idx}: {title} ({val})".format(
-            idx=idx + 1, title=button['title'], val=button['payload'])
+            idx=idx + 1,
+            title=button.get('title', ''),
+            val=button.get('payload', ''))
 
 
 class InputChannel(object):
@@ -178,7 +180,8 @@ class OutputChannel(object):
 
         for element in elements:
             element_msg = "{title} : {subtitle}".format(
-                    title=element['title'], subtitle=element['subtitle'])
+                    title=element.get('title', ''),
+                    subtitle=element.get('subtitle', ''))
             self.send_text_with_buttons(
                     recipient_id, element_msg, element['buttons'])
 

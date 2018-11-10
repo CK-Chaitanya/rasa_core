@@ -14,21 +14,68 @@ This project adheres to `Semantic Versioning`_ starting with version 0.2.0.
 Added
 -----
 - openapi documentation of server API
-- NLU data learned through interactive learning will now be stored in a separate markdown-format file (any previous NLU
-  data is merged)
-- Command line interface for interactive learning now displays policy confidence alongside the action name
+- NLU data learned through interactive learning will now be stored in a
+  separate markdown-format file (any previous NLU data is merged)
+- Command line interface for interactive learning now displays policy
+  confidence alongside the action name
 - added action prediction confidence & policy to ``ActionExecuted`` event
-- both the date and the time at which a model was trained are now included in the policy's metadata when it is persisted
-
+- the Core policy configuration can now be set in a config.yaml file.
+  This makes training custom policies possible.
+- both the date and the time at which a model was trained are now
+  included in the policy's metadata when it is persisted
+- show visualization of conversation while doing interactive learning
+- option for end-to-end evaluation of Rasa Core and NLU examples in
+  ``evaluate.py`` script
+- `/conversations/{sender_id}/story` endpoint for returning
+  the end-to-end story describing a conversation
+- docker-compose file to start a rasa core server together with nlu, an action server, and duckling
+- http server (``rasa_core.run --enable-api``) evaluation endpoint
+- ability to add tracker_store using endpoints.yml
+- ability load custom tracker store modules using the endpoints.yml
+- ability to add an event broker using an endpoint configuration file
+- raise an exception when ``server.py`` is used instead of ``rasa_core.run --enable-api``
+- add documentation on how to configure endpoints within a configuration file
+- ``auth_source`` parameter in ``MongoTrackerStore`` defining the database to
+  authenticate against
+- missing instructions on setting up the facebook connector
+- environment variables specified with ``${env_variable}`` in a yaml
+  configuration file are now replaced with the value of the environment variable
+- detailed documentation on how to deploy Rasa with Docker
+- make ``wait_time_between_pulls`` configurable through endpoint configuration
+- add ``FormPolicy`` to handle form action prediction
+- add ``ActionExecutionRejection`` exception and ``ActionExecutionRejected`` event
+- add default action ``ActionDeactivateForm()``
+- add ``formbot`` example
+- add ability to turn off auto slot filling with entity for each slot in domain.yml
+- add ``InvalidDomain`` exception
+- add ``active_form_...`` to state dictionary
+- add ``active_form`` and ``latest_action_name`` properties to ``DialogueStateTracker``
+- add ``Form`` and ``FormValidation`` events
+- add ``REQUESTED_SLOT`` constant
+- add ability to read ``action_listen`` from stories
+- added train/eval scripts to compare policies
 
 Changed
 -------
 - improved response format for ``/predict`` endpoint
 - all error messages from the server are now in json format
 - ``agent.log_message`` now returns a tracker instead of the trackers state
+- the core container does not load the nlu model by default anymore.
+  Instead it can be connected to a nlu server.
+- stories are now visualized as ``.html`` page instead of an image
+- move and deduplicate restaurantbot nlu data from ``franken_data.json`` to ``nlu_data.md``
+- forms were completely reworked, see changelog in ``rasa_core_sdk``
+- state featurization if some form is active changed
+- ``Domain`` raises ``InvalidDomain`` exception
+- interactive learning is now started with rasa_core.train interactive
+- passing a policy config file to train a model is now required
+- flags for output of evaluate script have been merged to one flag ``--output``
+  where you provide a folder where any output from the script should be stored
 
 Removed
 -------
+- removed graphviz dependency
+- policy config related flags in training script (see migration guide)
 
 
 Fixed
@@ -38,7 +85,20 @@ Fixed
 - use utf8 everywhere when handling file IO
 - argument ``--connector`` on run script accepts custom channel module names
 - properly handle non ascii categorical slot values, e.g. ``大于100亿元``
-- fixed HTTP server attempting to authenticate based on incorrect path to the correct JWT data field
+- fixed HTTP server attempting to authenticate based on incorrect path to
+  the correct JWT data field
+- all sender ids from channels are now handled as `str`.
+  Sender ids from old messages with an `int` id are converted to `str`.
+- legacy pep8 errors
+
+
+[0.11.12] - 2018-10-11
+^^^^^^^^^^^^^^^^^^^^^^
+
+Changed
+-------
+- Remove livechat widget from docs
+
 
 [0.11.11] - 2018-10-05
 ^^^^^^^^^^^^^^^^^^^^^^
