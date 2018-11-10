@@ -16,7 +16,9 @@ if typing.TYPE_CHECKING:
 def extract_story_graph(
         resource_name,  # type: Text
         domain,  # type: Domain
-        interpreter=None  # type: Optional[NaturalLanguageInterpreter]
+        interpreter=None,  # type: Optional[NaturalLanguageInterpreter]
+        use_e2e=False,  # type: bool
+        exclusion_percentage=None  # type: int
 ):
     # type: (...) -> StoryGraph
     from rasa_core.interpreter import RegexInterpreter
@@ -25,8 +27,11 @@ def extract_story_graph(
 
     if not interpreter:
         interpreter = RegexInterpreter()
-    story_steps = StoryFileReader.read_from_folder(resource_name,
-                                                   domain, interpreter)
+    story_steps = StoryFileReader.read_from_folder(
+                                    resource_name,
+                                    domain, interpreter,
+                                    use_e2e=use_e2e,
+                                    exclusion_percentage=exclusion_percentage)
     return StoryGraph(story_steps)
 
 
@@ -38,14 +43,16 @@ def load_data(
         augmentation_factor=20,  # type: int
         tracker_limit=None,  # type: Optional[int]
         use_story_concatenation=True,  # type: bool
-        debug_plots=False  # type: bool
+        debug_plots=False,
+        exclusion_percentage=None  # type: int
 ):
     # type: (...) -> List[DialogueStateTracker]
     from rasa_core.training import extract_story_graph
     from rasa_core.training.generator import TrainingDataGenerator
 
     if resource_name:
-        graph = extract_story_graph(resource_name, domain)
+        graph = extract_story_graph(resource_name, domain,
+                                    exclusion_percentage=exclusion_percentage)
 
         g = TrainingDataGenerator(graph, domain,
                                   remove_duplicates,
